@@ -1,0 +1,24 @@
+{
+  "name": "visto-listener",
+  "version": "0.0.1",
+  "type": "module",
+  "private": true,
+  "repository": "git@github.com:AlexSartori/mqtt-visto.git",
+  "author": "Alex Sartori <alex.sartori1997@gmail.com>",
+  "license": "MIT",
+  "description": "MQTT-Visualize-and-Store: a slim self-hosted web app to store data from MQTT subscriptions and build simple dasboards",
+  "dependencies": {
+    "config": "^3.3.12",
+    "js-yaml": "^4.1.0",
+    "mqtt": "^5.12.0",
+    "tsc": "^2.0.4"
+  },
+  "devDependencies": {
+    "@types/config": "^3.3.5",
+    "node-ts": "^8.0.2"
+  },
+  "scripts": {
+    "start": "node src/index.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}

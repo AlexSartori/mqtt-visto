@@ -1,0 +1,10 @@
+services:
+    # redis:
+    #     container_name: mqtt-visto-redis
+    #     image: redis:7.4.3-alpine3.21
+    
+    listener:
+        container_name: mqtt-visto-listener
+        build: visto-listener
+        volumes:
+            - ./config:/visto-listener/config
