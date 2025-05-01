@@ -1,45 +1,54 @@
 import config from 'config';
 import mqtt from 'mqtt';
 
-import { MQTTBroker } from './classes.ts'
+import getDBConnector, { DBConnector } from './DBConnector.ts';
+import { Metric, MQTTBroker, StorageStrategy } from './classes.ts'
+import getSegretaria from './Segretaria.ts';
 
 
-function setupClients(): Array<MQTTBroker> | null {
-    if (!config.has('mqtt_brokers')) return null;
+function setupDatabase(metrics: Array<Metric>): DBConnector {
+    let conn = getDBConnector();
+
+    // if (!config.has('strategies')) throw "No storage strategies specified";
+
+    let strategies: Array<StorageStrategy> = config.get('strategies');
+    strategies.forEach(s => {
+        // TODO: check that the label is a valid db name
+        // conn.ensureDB(s.label, s.precision, s.keep, s.duration);
+    });
+
+    (async () =>
+        await Promise.all(metrics.map(m => {
+            conn.addMetricIfNotExists(m);
+        }))
+    )();
+
+    return conn;
+}
+
+
+function setupClients(): Array<MQTTBroker> {
+    if (!config.has('mqtt_brokers')) throw "No MQTT brokers specified";
 
     let brokers: Array<MQTTBroker> = config.get('mqtt_brokers');
     brokers.forEach(b => {
         b.client = mqtt.connect(b.url, {manualConnect: true, username: b.username, password: b.password});
     });
 
-    console.log("Initialized");
-    console.log("Configured brokers:");
-    brokers.forEach(b => console.log("    - " + (b.label || '<no_label>') + " (" + b.url + "), connected=" + b.client.connected));
-    
     return brokers;
 }
 
 
-function messageHandler(topic, message, packet) {
-    console.log(`${topic}: ${message}`);
+function readMetricsConfig(): Array<Metric> {
+    if (!config.has('metrics')) throw "No metrics specified";
+    return config.get('metrics');
 }
 
 
 (function main() {
     let brokers = setupClients();
+    let metrics: Array<Metric> = readMetricsConfig();
+    let db = setupDatabase(metrics);
 
-    if (!brokers) {
-        console.error("No MQTT brokers specified");
-        return -1;
-    }
-
-    brokers.forEach(c => {
-        c.client.on('error', (err) => console.error(`Can't connect to broker ${c.url}: ${err}`));
-        c.client.on('connect', () => {
-            console.info(`Connected to broker ${c.url}`);
-            c.client.on('message', messageHandler);
-            c.client.subscribe(c.topics);
-        });
-        c.client.connect();
-    });
+    getSegretaria(db, brokers, metrics);
 })();

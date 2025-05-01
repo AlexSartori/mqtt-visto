@@ -1,10 +1,30 @@
 services:
-    # redis:
-    #     container_name: mqtt-visto-redis
-    #     image: redis:7.4.3-alpine3.21
-    
+    database:
+        container_name: mqtt-visto-db
+        image: postgres:17rc1-alpine3.20
+        env_file:
+            - .env
+        shm_size: 128mb
+        healthcheck:
+            test: ['CMD-SHELL', "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB} -h localhost"]
+            interval: 2s
+            timeout: 5s
+            retries: 10
+        volumes:
+            - $DB_DATA_DIR:/var/lib/postgresql/data
+
     listener:
         container_name: mqtt-visto-listener
         build: visto-listener
+        env_file:
+            - .env
+        depends_on:
+            database:
+                condition: service_healthy
         volumes:
             - ./config:/visto-listener/config
+        develop:
+            watch:
+                - action: sync
+                  path: ./visto-listener/src
+                  target: ./visto-listener/src

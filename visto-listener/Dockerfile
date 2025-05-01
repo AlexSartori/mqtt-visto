@@ -6,4 +6,4 @@ RUN yarn install --dev
 
 COPY src src
 
-CMD ["yarn", "start"]
+CMD ["yarn", "start_live"]

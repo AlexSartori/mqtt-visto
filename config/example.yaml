@@ -1,0 +1,52 @@
+mqtt_brokers:
+  - label: Broker 1
+    # The URL can be on the following protocols: 'mqtt', 'mqtts', 'tcp', 'tls', 'ws', 'wss', 'wxs', 'alis'. If you are trying to connect to a unix socket just append the +unix suffix to the protocol (ex: mqtt+unix)
+    url: "mqtt://my_server:1883"
+    username: tizioracca
+    password: gran_budapest_hotel
+
+    topics:
+      - cip-ciop/soil-moisture
+
+strategies:
+  - name: default
+    default: true
+
+  - name: strategy-two
+
+metrics:
+    # Cip & Ciop
+    - id: 1
+      dtype: int
+      topic: cip-ciop/soil-moisture
+      strategy: strategy-two
+    - id: 2
+      dtype: float
+      topic: cip-ciop/temp-cool
+    - id: 3
+      dtype: float
+      topic: cip-ciop/temp-warm
+    - id: 4
+      dtype: float
+      topic: cip-ciop/temp-air
+    - id: 5
+      dtype: int
+      topic: cip-ciop/air-moisture
+
+    # Giardiniere Willie
+    - id: 6
+      dtype: float
+      topic: willie/water-level
+      strategy: strategy-two
+    - id: 7
+      dtype: int
+      topic: willie/moisture-1
+    - id: 8
+      dtype: int
+      topic: willie/moisture-2
+    - id: 9
+      dtype: int
+      topic: willie/moisture-3
+    - id: 10
+      dtype: int
+      topic: willie/moisture-4
