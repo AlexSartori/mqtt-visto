@@ -9,6 +9,8 @@
   "description": "MQTT-Visualize-and-Store: a slim self-hosted web app to store data from MQTT subscriptions and build simple dasboards",
   "dependencies": {
     "@types/pg": "^8.11.14",
+    "@types/express": "^5.0.3",
+    "express": "^5.1.0",
     "config": "^3.3.12",
     "js-yaml": "^4.1.0",
     "mqtt": "^5.12.0",

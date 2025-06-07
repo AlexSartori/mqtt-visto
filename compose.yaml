@@ -1,4 +1,17 @@
 services:
+    webapp:
+        container_name: mqtt-visto-app
+        build:
+            context: ./visto-app
+            target: development
+        restart: unless-stopped
+        env_file:
+            - .env
+        ports:
+            - 8008:8008
+        volumes:
+            - ./visto-app/src:/app/src
+
     database:
         container_name: mqtt-visto-db
         image: postgres:17rc1-alpine3.20
@@ -15,7 +28,7 @@ services:
 
     listener:
         container_name: mqtt-visto-listener
-        build: visto-listener
+        build: ./visto-listener
         env_file:
             - .env
         depends_on:
@@ -23,8 +36,6 @@ services:
                 condition: service_healthy
         volumes:
             - ./config:/visto-listener/config
-        develop:
-            watch:
-                - action: sync
-                  path: ./visto-listener/src
-                  target: ./visto-listener/src
+            - ./visto-listener/src:/visto-listener/src
+        ports:
+            - 8009:8009

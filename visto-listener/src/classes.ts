@@ -40,3 +40,31 @@ export class Metric {
         this.topic = m.topic;
     }
 }
+
+export class Dashboard {
+    plots: Array<Plot>
+}
+
+export class Plot {
+    title: string
+    type: 'line' | 'bar'
+    legend: boolean
+    datasets: Array<PlotDataset>
+
+    constructor(plot: any) {
+        this.title = plot.title;
+        this.type = plot.type;
+        this.legend = plot.legend;
+        this.datasets = plot.datasets.map((d: any) => new PlotDataset(d));
+    }
+}
+
+export class PlotDataset {
+    name: string
+    metric_id: string
+
+    constructor(dataset: any) {
+        this.name = dataset.name;
+        this.metric_id = dataset.metric_id;
+    }
+}
